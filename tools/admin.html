@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pixel Wars Admin</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #1a1a1a;
+      color: #fff;
+    }
+    h1 {
+      color: #3b82f6;
+    }
+    .card {
+      background: #2a2a2a;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+      border: 1px solid #444;
+    }
+    button {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    button:hover {
+      background: #2563eb;
+    }
+    button:disabled {
+      background: #666;
+      cursor: not-allowed;
+    }
+    .warning {
+      background: #7c2d12;
+      border: 1px solid #ea580c;
+      padding: 15px;
+      border-radius: 6px;
+      margin: 15px 0;
+    }
+    .success {
+      background: #14532d;
+      border: 1px solid #22c55e;
+      padding: 15px;
+      border-radius: 6px;
+      margin: 15px 0;
+    }
+    .error {
+      background: #7f1d1d;
+      border: 1px solid #ef4444;
+      padding: 15px;
+      border-radius: 6px;
+      margin: 15px 0;
+    }
+    input {
+      background: #1a1a1a;
+      border: 1px solid #444;
+      color: #fff;
+      padding: 10px;
+      border-radius: 4px;
+      width: 100%;
+      font-size: 14px;
+      margin: 10px 0;
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px 0;
+      font-weight: 600;
+    }
+    code {
+      background: #1a1a1a;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+    }
+  </style>
+</head>
+<body>
+  <h1>⚔️ Pixel Wars Admin Panel</h1>
+  
+  <div class="card">
+    <h2>Start New Season (Simple)</h2>
+    <p>This will just increment the season number and set a new end time.</p>
+    
+    <div class="warning">
+      <strong>ℹ️ Note:</strong> This only changes the season number. It does NOT reset canvas/scores.
+    </div>
+
+    <button id="startSeasonSimpleBtn" onclick="startNewSeasonSimple()">
+      🚀 Start Next Season
+    </button>
+
+    <div id="resultSimple"></div>
+  </div>
+
+  <div class="card">
+    <h2>Start New Season (Full Reset)</h2>
+    <p>This will end the current season, calculate the winner, reset the game, and start a new season.</p>
+    
+    <div class="warning">
+      <strong>⚠️ Warning:</strong> This will reset the canvas, scores, and zones. Team assignments will be preserved.
+    </div>
+
+    <label for="postId">Post ID:</label>
+    <input 
+      type="text" 
+      id="postId" 
+      placeholder="Enter post ID (e.g., abc123)"
+      value=""
+    />
+    
+    <p style="font-size: 14px; color: #999;">
+      Find your post ID in the URL: reddit.com/r/subreddit/comments/<code>POST_ID</code>/title
+    </p>
+
+    <button id="startSeasonBtn" onclick="startNewSeason()">
+      🚀 Start Season with Full Reset
+    </button>
+
+    <div id="result"></div>
+  </div>
+
+  <div class="card">
+    <h2>Current Season Info</h2>
+    <button onclick="getCurrentSeason()">📊 Check Current Season</button>
+    <div id="seasonInfo"></div>
+  </div>
+
+  <script>
+    async function startNewSeasonSimple() {
+      const resultDiv = document.getElementById('resultSimple');
+      const btn = document.getElementById('startSeasonSimpleBtn');
+
+      btn.disabled = true;
+      btn.textContent = '⏳ Starting new season...';
+      resultDiv.innerHTML = '<p>Processing...</p>';
+
+      try {
+        const response = await fetch(`/api/season/start-new-simple`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          const endDate = new Date(data.endTime);
+          resultDiv.innerHTML = `
+            <div class="success">
+              <h3>✅ ${data.message}</h3>
+              <p><strong>Season Number:</strong> ${data.seasonNumber}</p>
+              <p><strong>Ends:</strong> ${endDate.toLocaleString()}</p>
+            </div>
+          `;
+        } else {
+          resultDiv.innerHTML = `
+            <div class="error">
+              <strong>❌ Error:</strong> ${data.message}
+            </div>
+          `;
+        }
+      } catch (error) {
+        resultDiv.innerHTML = `
+          <div class="error">
+            <strong>❌ Error:</strong> ${error.message}
+          </div>
+        `;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '🚀 Start Next Season';
+      }
+    }
+
+    async function startNewSeason() {
+      const postId = document.getElementById('postId').value.trim();
+      const resultDiv = document.getElementById('result');
+      const btn = document.getElementById('startSeasonBtn');
+
+      if (!postId) {
+        resultDiv.innerHTML = '<div class="error">❌ Please enter a post ID</div>';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = '⏳ Starting new season...';
+      resultDiv.innerHTML = '<p>Processing...</p>';
+
+      try {
+        const response = await fetch(`/api/season/start-new`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          resultDiv.innerHTML = `
+            <div class="success">
+              <h3>✅ ${data.message}</h3>
+              <p><strong>Previous Season:</strong> ${data.previousSeason}</p>
+              <p><strong>Winner:</strong> ${data.winner.name} (${data.winner.finalScore} points)</p>
+            </div>
+          `;
+        } else {
+          resultDiv.innerHTML = `
+            <div class="error">
+              <strong>❌ Error:</strong> ${data.message}
+            </div>
+          `;
+        }
+      } catch (error) {
+        resultDiv.innerHTML = `
+          <div class="error">
+            <strong>❌ Error:</strong> ${error.message}
+          </div>
+        `;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '🚀 Start Season with Full Reset';
+      }
+    }
+
+    async function getCurrentSeason() {
+      const resultDiv = document.getElementById('seasonInfo');
+      resultDiv.innerHTML = '<p>Loading...</p>';
+
+      try {
+        const response = await fetch('/api/season/current');
+        const data = await response.json();
+
+        if (response.ok) {
+          const endDate = new Date(data.endTime);
+          const timeRemaining = Math.floor(data.timeRemaining / (1000 * 60 * 60));
+
+          resultDiv.innerHTML = `
+            <div class="success">
+              <p><strong>Season Number:</strong> ${data.seasonNumber}</p>
+              <p><strong>Status:</strong> ${data.status}</p>
+              <p><strong>Ends:</strong> ${endDate.toLocaleString()}</p>
+              <p><strong>Time Remaining:</strong> ${timeRemaining} hours</p>
+            </div>
+          `;
+        } else {
+          resultDiv.innerHTML = `
+            <div class="error">
+              <strong>❌ Error:</strong> ${data.message}
+            </div>
+          `;
+        }
+      } catch (error) {
+        resultDiv.innerHTML = `
+          <div class="error">
+            <strong>❌ Error:</strong> ${error.message}
+          </div>
+        `;
+      }
+    }
+  </script>
+</body>
+</html>

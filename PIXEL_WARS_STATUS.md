@@ -46,7 +46,7 @@ npm run dev
 
 ### Working Now
 - **Multiplayer Canvas**: 100x100 pixel grid shared across all players
-- **Team-Based Gameplay**: 4 teams (Red, Blue, Green, Yellow) with auto-balancing
+- **Team-Based Gameplay**: 3 teams (Red, Blue, Green) with auto-balancing
 - **Pixel Credits**: Start with 5 credits, regenerate every 2 minutes (max 10)
 - **Real-Time Updates**: Canvas updates every second via polling
 - **Territory Zones**: 10x10 zones show team control with visual overlays

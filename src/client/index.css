@@ -1,5 +1,11 @@
 @import 'tailwindcss';
 
+/* Pixel Font Utility */
+.font-pixel {
+  font-family: 'Press Start 2P', cursive;
+  letter-spacing: 0.05em;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

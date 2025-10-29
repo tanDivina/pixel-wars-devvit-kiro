@@ -29,7 +29,14 @@ export class CreditsService {
     }
     
     const credits = parseInt(data.credits);
-    const nextCreditTime = parseInt(data.nextCreditTime || '0');
+    let nextCreditTime = parseInt(data.nextCreditTime || '0');
+    
+    // Fix edge case: if user is below max credits but has no cooldown set, set one now
+    if (credits < config.maxCredits && nextCreditTime === 0) {
+      const now = Date.now();
+      nextCreditTime = now + (config.creditCooldown * 1000);
+      await this.setUserCredits(postId, username, credits, nextCreditTime);
+    }
     
     // Check if we should regenerate credits
     const now = Date.now();
@@ -88,10 +95,19 @@ export class CreditsService {
     const newCredits = current.credits - 1;
     const now = Date.now();
     
-    // Start cooldown if this is the first credit spent or if we're at max
-    const nextCreditTime = current.nextCreditTime === 0 || current.credits === config.maxCredits
-      ? now + (config.creditCooldown * 1000)
-      : current.nextCreditTime;
+    // Determine next credit time
+    let nextCreditTime: number;
+    
+    if (newCredits >= config.maxCredits) {
+      // At max credits, no cooldown needed
+      nextCreditTime = 0;
+    } else if (current.nextCreditTime === 0 || current.credits === config.maxCredits) {
+      // First credit spent or was at max - start new cooldown
+      nextCreditTime = now + (config.creditCooldown * 1000);
+    } else {
+      // Already have a cooldown running - keep it
+      nextCreditTime = current.nextCreditTime;
+    }
     
     await this.setUserCredits(postId, username, newCredits, nextCreditTime);
     

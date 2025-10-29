@@ -11,7 +11,6 @@ export const DEFAULT_CONFIG: GameConfig = {
     { id: 'red', name: 'Red Team', color: '#FF4444' },
     { id: 'blue', name: 'Blue Team', color: '#4444FF' },
     { id: 'green', name: 'Green Team', color: '#44FF44' },
-    { id: 'yellow', name: 'Yellow Team', color: '#FFFF44' },
   ],
 };
 

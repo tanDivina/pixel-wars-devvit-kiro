@@ -14,7 +14,6 @@ describe('ControlPanel', () => {
       { id: 'red', name: 'Red Team', color: '#FF4444' },
       { id: 'blue', name: 'Blue Team', color: '#4444FF' },
       { id: 'green', name: 'Green Team', color: '#44FF44' },
-      { id: 'yellow', name: 'Yellow Team', color: '#FFFF44' },
     ],
   };
 
@@ -83,7 +82,6 @@ describe('ControlPanel', () => {
     expect(screen.getByText('Red Team')).toBeInTheDocument();
     expect(screen.getByText('Blue Team')).toBeInTheDocument();
     expect(screen.getByText('Green Team')).toBeInTheDocument();
-    expect(screen.getByText('Yellow Team')).toBeInTheDocument();
   });
 
   it('should highlight user team', () => {

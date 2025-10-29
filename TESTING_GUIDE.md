@@ -35,7 +35,7 @@ Open that URL in your browser.
 
 ### 🎯 Game Initialization
 - [ ] Game loads without errors
-- [ ] You're assigned to a team (Red/Blue/Green/Yellow)
+- [ ] You're assigned to a team (Red/Blue/Green)
 - [ ] Your username appears in header
 - [ ] Team badge shows in header
 - [ ] Starting credits show (should be 5)

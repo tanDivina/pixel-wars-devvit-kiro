@@ -2,6 +2,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { useGameState } from './hooks/useGameState';
 import { usePixelCredits } from './hooks/usePixelCredits';
 import { useToast } from './hooks/useToast';
+import { useSoundEffects } from './hooks/useSoundEffects';
 import { Canvas } from './components/Canvas';
 import { Tutorial } from './components/Tutorial';
 import { Leaderboard } from './components/Leaderboard';
@@ -11,6 +12,7 @@ import { TeamBadge } from './components/TeamBadge';
 import { SplashScreen } from './components/SplashScreen';
 import { CountdownTimer } from './components/CountdownTimer';
 import { WinnerModal } from './components/WinnerModal';
+import { SeasonAdmin } from './components/SeasonAdmin';
 import type { SeasonCurrentResponse, SeasonHistoryResponse } from '../shared/types/api';
 
 export const App = () => {
@@ -30,12 +32,14 @@ export const App = () => {
 
   const { formattedTime, hasTimeRemaining } = usePixelCredits(nextCreditTime);
   const { toasts, removeToast, addToast, error: showError } = useToast();
-  const [showTutorial, setShowTutorial] = useState(false);
+  const { playPixelPlace, playZoneCapture, playCreditRegeneration, playError } = useSoundEffects();
+  const [, setShowTutorial] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [currentZoom, setCurrentZoom] = useState(1);
   const [showSplash, setShowSplash] = useState(true);
   const [hasShownWelcome, setHasShownWelcome] = useState(false);
   const [previousZones, setPreviousZones] = useState<typeof zones>([]);
+  const [previousCredits, setPreviousCredits] = useState(pixelCredits);
   const [seasonData, setSeasonData] = useState<SeasonCurrentResponse | null>(null);
   const [showWinnerModal, setShowWinnerModal] = useState(false);
   const [winnerData, setWinnerData] = useState<SeasonHistoryResponse['history'][0] | null>(null);
@@ -77,8 +81,10 @@ export const App = () => {
         if (data.history && data.history.length > 0) {
           // Get the most recent completed season
           const latestSeason = data.history[0];
-          setWinnerData(latestSeason);
-          setShowWinnerModal(true);
+          if (latestSeason) {
+            setWinnerData(latestSeason);
+            setShowWinnerModal(true);
+          }
         }
       }
     } catch (error) {
@@ -91,27 +97,33 @@ export const App = () => {
     if (pixelCredits <= 0) {
       const timeLeft = formattedTime || 'soon';
       showError(`⏳ Out of credits! Next pixel in ${timeLeft}`, 'no_credits');
+      playError();
       return;
     }
     
     // Check if coordinates are valid
     if (!config || x < 0 || x >= config.canvasWidth || y < 0 || y >= config.canvasHeight) {
       showError('❌ Invalid position. Click within the canvas.', 'invalid_coordinates');
+      playError();
       return;
     }
     
     try {
       const result = await placePixel(x, y);
       if (result) {
+        // Play success sound
+        playPixelPlace();
         // Success message with shorter duration (1.5s)
         const id = addToast(`🎨 Pixel placed at (${x}, ${y}) for ${team?.name}!`, 'success');
         setTimeout(() => removeToast(id), 1500);
       } else {
+        playError();
         showError('❌ Failed to place pixel. Please try again.', 'unknown');
       }
     } catch (err) {
       // Network or server error
       console.error('Pixel placement error:', err);
+      playError();
       showError('🌐 Connection issue. Check your internet and try again.', 'network_error');
     }
   };
@@ -133,6 +145,7 @@ export const App = () => {
       
       // Zone changed hands to your team
       if (prevZone && prevZone.controllingTeam !== team.id && zone.controllingTeam === team.id) {
+        playZoneCapture();
         const id = addToast(`🎉 ${team.name} captured zone (${zone.x}, ${zone.y})!`, 'success');
         setTimeout(() => removeToast(id), 2500);
       }
@@ -146,7 +159,7 @@ export const App = () => {
     });
 
     setPreviousZones(zones);
-  }, [zones, team, previousZones, config, addToast, removeToast]);
+  }, [zones, team, previousZones, config, addToast, removeToast, playZoneCapture]);
 
   // Show welcome message once after joining
   useEffect(() => {
@@ -156,6 +169,14 @@ export const App = () => {
       setTimeout(() => removeToast(id), 3000);
     }
   }, [showSplash, loading, username, hasShownWelcome, team, addToast, removeToast]);
+
+  // Detect credit regeneration
+  useEffect(() => {
+    if (pixelCredits > previousCredits && previousCredits >= 0) {
+      playCreditRegeneration();
+    }
+    setPreviousCredits(pixelCredits);
+  }, [pixelCredits, previousCredits, playCreditRegeneration]);
 
   // Show splash screen while loading or if user hasn't joined yet
   if (showSplash || loading) {
@@ -330,6 +351,9 @@ export const App = () => {
         onToggleLeaderboard={() => setShowLeaderboard(!showLeaderboard)}
         currentZoom={currentZoom}
       />
+
+      {/* Season Admin (Dev Only) */}
+      <SeasonAdmin />
     </div>
   );
 };

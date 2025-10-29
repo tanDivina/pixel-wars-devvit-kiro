@@ -127,7 +127,6 @@ App
 - 🔴 Red: `#FF4444`
 - 🔵 Blue: `#4444FF`
 - 🟢 Green: `#44FF44`
-- 🟡 Yellow: `#FFFF44`
 
 ### UI Elements
 - Header/Footer: `bg-gray-800` (dark gray)

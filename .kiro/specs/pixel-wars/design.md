@@ -941,7 +941,6 @@ const DEFAULT_CONFIG: GameConfig = {
     { id: 'red', name: 'Red Team', color: '#FF0000' },
     { id: 'blue', name: 'Blue Team', color: '#0000FF' },
     { id: 'green', name: 'Green Team', color: '#00FF00' },
-    { id: 'yellow', name: 'Yellow Team', color: '#FFFF00' },
   ],
 };
 ```

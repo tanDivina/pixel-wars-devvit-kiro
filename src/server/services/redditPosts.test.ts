@@ -360,7 +360,6 @@ describe('RedditPostService', () => {
         { teamId: 'red', teamName: 'Red Team', score: 300, zonesControlled: 3, playerCount: 5 },
         { teamId: 'blue', teamName: 'Blue Team', score: 200, zonesControlled: 2, playerCount: 4 },
         { teamId: 'green', teamName: 'Green Team', score: 100, zonesControlled: 1, playerCount: 3 },
-        { teamId: 'yellow', teamName: 'Yellow Team', score: 50, zonesControlled: 0, playerCount: 2 },
       ];
 
       const season: SeasonMetadata = {

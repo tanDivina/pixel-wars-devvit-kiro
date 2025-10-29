@@ -14,7 +14,6 @@ vi.mock('../hooks/useLeaderboard', () => ({
       { teamId: 'red', teamName: 'Red Team', zonesControlled: 30, totalPixels: 500, rank: 1 },
       { teamId: 'blue', teamName: 'Blue Team', zonesControlled: 25, totalPixels: 400, rank: 2 },
       { teamId: 'green', teamName: 'Green Team', zonesControlled: 20, totalPixels: 300, rank: 3 },
-      { teamId: 'yellow', teamName: 'Yellow Team', zonesControlled: 15, totalPixels: 200, rank: 4 },
     ],
     userRank: 1,
     loading: false,

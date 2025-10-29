@@ -30,7 +30,7 @@ Task 18 was already implemented! Here's what exists:
   - Max credits: 10
   - Initial credits: 5
   - Zone size: 10x10
-  - Teams: Red, Blue, Green, Yellow
+  - Teams: Red, Blue, Green
 
 ### 5. Devvit Configuration (`devvit.json`)
 - ✅ Triggers configured: `onAppInstall` → `/internal/on-app-install`

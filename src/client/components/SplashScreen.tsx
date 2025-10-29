@@ -77,7 +77,7 @@ export const SplashScreen = ({ onJoinBattle }: SplashScreenProps) => {
           <div className="mb-4">
             <span className="text-7xl md:text-8xl animate-bounce-subtle">⚔️</span>
           </div>
-          <h1 className="text-6xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 mb-4 tracking-tight animate-pulse-slow">
+          <h1 className="font-pixel text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 mb-4 animate-pulse-slow">
             PIXEL WARS
           </h1>
           {seasonData && (

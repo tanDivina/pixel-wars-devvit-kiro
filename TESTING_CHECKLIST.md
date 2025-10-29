@@ -25,7 +25,7 @@
 
 ### Game Initialization
 - [ ] Username displays in header
-- [ ] Team assignment shows (Red/Blue/Green/Yellow)
+- [ ] Team assignment shows (Red/Blue/Green)
 - [ ] Team badge displays with correct color
 - [ ] Starting credits show (5)
 - [ ] Canvas loads with existing pixels

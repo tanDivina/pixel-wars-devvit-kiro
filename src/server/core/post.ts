@@ -11,10 +11,10 @@ export const createPost = async () => {
       // Splash Screen Configuration
       appDisplayName: 'Pixel Wars',
       backgroundUri: 'default-splash.png',
-      buttonLabel: '⚔️ Join the Battle',
-      description: 'Claim territory. Dominate the canvas. Lead your team to victory.',
+      buttonLabel: '⚔️ Play Now',
+      description: 'Choose your team • Place pixels • Control zones • Win the season',
       entryUri: 'index.html',
-      heading: 'PIXEL WARS',
+      heading: '⚔️ PIXEL WARS',
       appIconUri: 'default-icon.png',
     },
     postData: {
@@ -22,6 +22,6 @@ export const createPost = async () => {
       startTime: Date.now(),
     },
     subredditName: subredditName,
-    title: '🎨⚔️ Pixel Wars - Team Territory Battle',
+    title: '⚔️ Pixel Wars - Team Territory Battle',
   });
 };

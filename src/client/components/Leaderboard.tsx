@@ -327,7 +327,6 @@ const getTeamColor = (teamId: string): string => {
     red: '#FF4444',
     blue: '#4444FF',
     green: '#44FF44',
-    yellow: '#FFFF44',
   };
   return colors[teamId.toLowerCase()] || '#888888';
 };

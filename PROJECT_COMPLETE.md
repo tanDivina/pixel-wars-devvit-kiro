@@ -49,7 +49,7 @@
 - **Test Files**: 22+ test files with comprehensive coverage
 
 ### Features
-- **Teams**: 4 (Red, Blue, Green, Yellow)
+- **Teams**: 3 (Red, Blue, Green)
 - **Canvas Size**: 100x100 pixels (10,000 total)
 - **Zones**: 100 zones (10x10 each)
 - **Credit System**: 5 initial, 10 max, 2-minute cooldown

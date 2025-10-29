@@ -466,6 +466,86 @@ router.post('/api/season/settings', authenticateUser(reddit), generalRateLimiter
   }
 });
 
+// Debug endpoint to check user credits (DEV ONLY)
+router.get('/api/debug/credits', authenticateUser(reddit), validatePostId(context), async (req, res): Promise<void> => {
+  try {
+    const postId = (req as any).postId;
+    const username = (req as any).username;
+    const config = await configService.getConfig(postId);
+    
+    const { RedisKeys } = await import('./utils/redis-keys');
+    const key = RedisKeys.userCredits(postId, username);
+    const data = await redis.hGetAll(key);
+    
+    const credits = await creditsService.getUserCredits(postId, username, config);
+    const timeUntilNext = await creditsService.getTimeUntilNextCredit(postId, username, config);
+    
+    res.json({
+      username,
+      rawRedisData: data,
+      processedCredits: credits,
+      timeUntilNextMs: timeUntilNext,
+      timeUntilNextFormatted: `${Math.floor(timeUntilNext / 60000)}:${Math.floor((timeUntilNext % 60000) / 1000).toString().padStart(2, '0')}`,
+      currentTime: Date.now(),
+    });
+  } catch (error) {
+    console.error('Debug credits error:', error);
+    res.status(500).json({ error: String(error) });
+  }
+});
+
+// Admin endpoint to manually start a new season (simple version - just increments season)
+router.post('/api/season/start-new-simple', authenticateUser(reddit), generalRateLimiter.middleware(), async (_req, res): Promise<void> => {
+  try {
+    await ensureSeasonInitialized();
+    
+    const { SeasonService } = await import('./services/season.js');
+    const seasonService = new SeasonService(redis);
+
+    // Just start a new season (increments number)
+    const newSeason = await seasonService.startNewSeason();
+
+    res.json({
+      status: 'success',
+      message: `Season ${newSeason.seasonNumber} started!`,
+      seasonNumber: newSeason.seasonNumber,
+      startTime: newSeason.startTime,
+      endTime: newSeason.endTime,
+    });
+  } catch (error) {
+    console.error('API Start New Season Error:', error);
+    res.status(500).json({ status: 'error', message: 'Failed to start new season' });
+  }
+});
+
+// Admin endpoint to manually start a new season (full version with game reset)
+router.post('/api/season/start-new', authenticateUser(reddit), validatePostId(context), generalRateLimiter.middleware(), async (req, res): Promise<void> => {
+  try {
+    const postId = (req as any).postId;
+    const username = (req as any).username;
+    
+    console.log(`User ${username} requesting to start new season for post ${postId}`);
+
+    const { SeasonService } = await import('./services/season.js');
+    const seasonService = new SeasonService(redis);
+    
+    const config = await configService.getConfig(postId);
+
+    // End current season and start new one
+    const history = await seasonService.endSeason(postId, config);
+
+    res.json({
+      status: 'success',
+      message: `Season ${history.seasonNumber} ended. New season started!`,
+      previousSeason: history.seasonNumber,
+      winner: history.winningTeam,
+    });
+  } catch (error) {
+    console.error('API Start New Season Error:', error);
+    res.status(500).json({ status: 'error', message: 'Failed to start new season' });
+  }
+});
+
 // Use router middleware
 app.use(router);
 
