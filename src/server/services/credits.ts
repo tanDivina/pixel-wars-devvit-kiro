@@ -30,16 +30,17 @@ export class CreditsService {
     
     const credits = parseInt(data.credits);
     let nextCreditTime = parseInt(data.nextCreditTime || '0');
+    const now = Date.now();
     
     // Fix edge case: if user is below max credits but has no cooldown set, set one now
     if (credits < config.maxCredits && nextCreditTime === 0) {
-      const now = Date.now();
       nextCreditTime = now + (config.creditCooldown * 1000);
       await this.setUserCredits(postId, username, credits, nextCreditTime);
+      // Return immediately with the new cooldown
+      return { credits, nextCreditTime };
     }
     
     // Check if we should regenerate credits
-    const now = Date.now();
     if (credits < config.maxCredits && nextCreditTime > 0 && now >= nextCreditTime) {
       return await this.regenerateCredits(postId, username, config, credits, nextCreditTime);
     }
