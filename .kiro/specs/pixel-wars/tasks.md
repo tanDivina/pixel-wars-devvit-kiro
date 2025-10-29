@@ -378,7 +378,7 @@
     - Enhance mobile UI
     - Test accessibility
     - _Requirements: 7.4, 8.3, 8.4, 8.5, 12.4, 12.5_
-  - [-] 24.3 UX polish pass
+  - [x] 24.3 UX polish pass
     - Improve tutorial clarity
     - Enhance error messages
     - Add helpful tooltips
