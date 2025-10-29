@@ -558,7 +558,7 @@ src/
 
 ## Credits
 
-Built with ❤️ using Reddit's Devvit platform.
+Built with ❤️ using Reddit's Devvit platform & Kiro AI.
 
 ## License
 
